@@ -1,47 +1,39 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Home</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        .logout-btn {
-            padding: 0.5rem 1rem;
-            background-color: #dc3545;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-        }
-        .logout-btn:hover {
-            background-color: #c82333;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Bienvenido, {{ user.username }}!</h1>
-            <a href="{% url 'logout' %}" class="logout-btn">Salir</a>
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block nav_title %}Dashboard{% endblock %}
+
+{% block nav_items %}
+    {% if user.is_staff %}
+    <a href="{% url 'user_list' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Users</a>
+    {% endif %}
+    <a href="{% url 'analytics' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Analytics</a>
+    <form method="post" action="{% url 'logout' %}" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Welcome, {{ user.username }}!</h2>
+                <div class="space-y-4">
+                    <p class="text-gray-600 dark:text-gray-400">You are logged in to your account.</p>
+                    {% if user.is_staff %}
+                    <div class="mt-4">
+                        <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Admin Actions:</h3>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><a href="{% url 'user_list' %}" class="text-primary hover:text-primary-dark">Manage Users</a></li>
+                            <li><a href="{% url 'analytics' %}" class="text-primary hover:text-primary-dark">View Analytics</a></li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
         </div>
-        <p>Estas dentro de tu cuenta</p>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

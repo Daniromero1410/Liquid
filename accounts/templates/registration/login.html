@@ -1,64 +1,98 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Inicio de Sesion</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f5f5f5;
-        }
-        .login-container {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-        .form-group {
-            margin-bottom: 1rem;
-        }
-        input {
-            width: 100%;
-            padding: 0.5rem;
-            margin-top: 0.25rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .signup-link {
-            text-align: center;
-            margin-top: 1rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <h2>Inicio de Sesion</h2>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Iniciar Sesion</button>
-        </form>
-        <div class="signup-link">
-            <p>No tienes Cuenta? <a href="{% url 'signup' %}">Registrarse</a></p>
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="min-h-screen flex relative">
+    <!-- Dark mode toggle button -->
+    <button onclick="toggleDarkMode()" class="absolute top-4 right-4 p-2 rounded-lg bg-gray-700/50 hover:bg-gray-700/70 transition-colors">
+        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+        </svg>
+    </button>
+
+    <!-- Left side - Login form -->
+    <div class="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 bg-white dark:bg-[#0B1A2C] transition-colors">
+        <div class="max-w-md w-full">
+            <!-- Contenedor Principal -->
+            <div class="bg-white dark:bg-gray-800 shadow-xl rounded-2xl p-8 space-y-8 backdrop-blur-xl border border-gray-200 dark:border-gray-700 transition-all">
+                <!-- Logo y encabezado -->
+                <div>
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="h-12 w-12">
+                            <svg class="text-[#0B1A2C] dark:text-white transition-colors" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 375 374.999991" preserveAspectRatio="xMidYMid meet">
+                                <defs>
+                                    <clipPath id="logo-clip">
+                                        <path d="M 77.429688 77.429688 L 297.929688 77.429688 L 297.929688 297.929688 L 77.429688 297.929688 Z M 77.429688 77.429688" clip-rule="nonzero"/>
+                                    </clipPath>
+                                </defs>
+                                <g clip-path="url(#logo-clip)">
+                                    <path fill="currentColor" d="M 292.242188 77.429688 L 82.757812 77.429688 C 79.894531 77.429688 77.566406 79.757812 77.566406 82.621094 L 77.566406 292.390625 C 77.566406 295.25 79.894531 297.578125 82.757812 297.578125 L 292.242188 297.578125 C 295.105469 297.578125 297.433594 295.25 297.433594 292.390625 L 297.433594 82.621094 C 297.433594 79.757812 295.105469 77.429688 292.242188 77.429688 Z M 116.828125 263.507812 L 218.914062 263.511719 L 218.914062 287.199219 L 87.949219 287.199219 L 87.949219 87.8125 L 111.636719 87.8125 L 111.636719 258.316406 C 111.636719 261.179688 113.964844 263.507812 116.828125 263.507812 Z M 150.898438 229.441406 L 218.914062 229.441406 L 218.914062 253.128906 L 122.019531 253.128906 L 122.019531 87.8125 L 145.707031 87.8125 L 145.707031 224.25 C 145.707031 227.113281 148.035156 229.441406 150.898438 229.441406 Z M 156.089844 219.058594 L 156.089844 155.953125 L 218.914062 155.953125 L 218.914062 219.058594 Z M 224.105469 145.570312 L 156.089844 145.570312 L 156.089844 121.882812 L 252.984375 121.882812 L 252.984375 287.199219 L 229.292969 287.199219 L 229.292969 150.761719 C 229.292969 147.898438 226.964844 145.570312 224.105469 145.570312 Z M 258.171875 111.503906 L 156.089844 111.5 L 156.089844 87.8125 L 287.050781 87.8125 L 287.050781 287.199219 L 263.363281 287.199219 L 263.363281 116.691406 C 263.363281 113.832031 261.035156 111.503906 258.171875 111.503906 Z M 258.171875 111.503906"/>
+                                </g>
+                            </svg>
+                        </div>
+                        <span class="text-2xl font-semibold text-[#0B1A2C] dark:text-white transition-colors">Liquid Strength Sensor</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-[#0B1A2C] dark:text-white transition-colors">Bienvenido de vuelta</h2>
+                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 transition-colors">
+                        Por favor Inicia Sesión en tu cuenta
+                    </p>
+                </div>
+
+                <!-- Formulario -->
+                <form class="space-y-6" method="post">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <label for="id_username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                                Nombre de Usuario
+                            </label>
+                            <input id="id_username" name="username" type="text" required 
+                                   class="mt-1 appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+                                   placeholder="name@company.com">
+                        </div>
+                        <div class="relative">
+                            <label for="id_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">
+                                Contraseña
+                            </label>
+                            <input id="id_password" name="password" type="password" required
+                                   class="mt-1 appearance-none rounded-lg relative block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700/50 placeholder-gray-500 dark:placeholder-gray-400 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all"
+                                   placeholder="••••••••">
+                        </div>
+                    </div>
+
+                    <!-- Opciones adicionales -->
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <input id="remember_me" name="remember_me" type="checkbox"
+                                   class="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700/50 transition-colors">
+                            <label for="remember_me" class="ml-2 block text-sm text-gray-700 dark:text-gray-300 transition-colors">
+                                Recordarme
+                            </label>
+                        </div>
+                        <div class="text-sm">
+                            <a href="#" class="font-medium text-blue-500 hover:text-blue-400 transition-colors">
+                                Olvidaste tu Contraseña?
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Botón de envío -->
+                    <div>
+                        <button type="submit"
+                                class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all">
+                            Inicia Sesión en tu cuenta
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
-</body>
-</html>
+
+    <!-- Right side - Illustration -->
+    <div class="hidden lg:flex lg:flex-1 bg-white dark:bg-[#0B1A2C] items-center justify-center p-12 transition-colors">
+        <img src="{% static 'accounts/images/login-illustration.svg' %}" alt="Login illustration" class="max-w-full h-auto">
+    </div>
+</div>
+{% endblock %}
