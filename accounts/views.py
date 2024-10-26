@@ -9,7 +9,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 class UserListView(ListView):
-    model = User
+    model = User 
     template_name = 'accounts/user_list.html'
     context_object_name = 'users'
 
@@ -36,12 +36,11 @@ def home(request):
 
 @login_required
 def analytics(request):
-    # Get basic analytics data
+   
     total_users = User.objects.count()
     active_users = User.objects.filter(is_active=True).count()
     staff_users = User.objects.filter(is_staff=True).count()
     
-    # Get users created in the last 30 days
     thirty_days_ago = timezone.now() - timedelta(days=30)
     recent_users = User.objects.filter(date_joined__gte=thirty_days_ago).count()
     
