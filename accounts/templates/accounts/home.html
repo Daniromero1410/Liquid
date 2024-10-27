@@ -8,10 +8,12 @@
     <a href="{% url 'user_list' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Users</a>
     {% endif %}
     <a href="{% url 'analytics' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Analytics</a>
+    <a href="{% url 'sensor_config' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Sensor</a>
     <form method="post" action="{% url 'logout' %}" class="inline">
         {% csrf_token %}
         <button type="submit" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
     </form>
+    
 {% endblock %}
 
 {% block content %}

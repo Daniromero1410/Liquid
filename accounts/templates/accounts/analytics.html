@@ -1,70 +1,54 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Analytics</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-lg">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold">Analytics</h1>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <a href="{% url 'home' %}" class="text-gray-700 hover:text-gray-900 px-3 py-2">Dashboard</a>
-                        <form method="post" action="{% url 'logout' %}" class="inline">
-                            {% csrf_token %}
-                            <button type="submit" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
-                        </form>
-                    </div>
+
+{% block title %}Analytics{% endblock %}
+
+{% block nav_title %}Analytics{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'home' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Dashboard</a>
+    <form method="post" action="{% url 'logout' %}" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+    </form>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <!-- Total Users Card -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg transition-colors">
+                <div class="px-4 py-5 sm:p-6">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate transition-colors">Total Users</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white transition-colors">{{ total_users }}</dd>
                 </div>
             </div>
-        </nav>
 
-        <!-- Analytics Content -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <!-- Total Users Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="px-4 py-5 sm:p-6">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ total_users }}</dd>
-                        </div>
-                    </div>
+            <!-- Active Users Card -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg transition-colors">
+                <div class="px-4 py-5 sm:p-6">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate transition-colors">Active Users</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white transition-colors">{{ active_users }}</dd>
+                </div>
+            </div>
 
-                    <!-- Active Users Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="px-4 py-5 sm:p-6">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Usuarios Activos</dt>
-                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ active_users }}</dd>
-                        </div>
-                    </div>
+            <!-- Staff Users Card -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg transition-colors">
+                <div class="px-4 py-5 sm:p-6">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate transition-colors">Staff Users</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white transition-colors">{{ staff_users }}</dd>
+                </div>
+            </div>
 
-                    <!-- Staff Users Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="px-4 py-5 sm:p-6">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Usuarios</dt>
-                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ staff_users }}</dd>
-                        </div>
-                    </div>
-
-                    <!-- Recent Users Card -->
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="px-4 py-5 sm:p-6">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Nuevos Usuarios (30 Dias)</dt>
-                            <dd class="mt-1 text-3xl font-semibold text-gray-900">{{ recent_users }}</dd>
-                        </div>
-                    </div>
+            <!-- Recent Users Card -->
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-lg rounded-lg transition-colors">
+                <div class="px-4 py-5 sm:p-6">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate transition-colors">New Users (30 days)</dt>
+                    <dd class="mt-1 text-3xl font-semibold text-gray-900 dark:text-white transition-colors">{{ recent_users }}</dd>
                 </div>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

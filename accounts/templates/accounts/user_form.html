@@ -1,59 +1,52 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{% if form.instance.pk %}Edit{% else %}Create{% endif %} User</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <!-- Navigation -->
-        <nav class="bg-white shadow-lg">
-            <div class="max-w-7xl mx-auto px-4">
-                <div class="flex justify-between h-16">
-                    <div class="flex">
-                        <div class="flex-shrink-0 flex items-center">
-                            <h1 class="text-xl font-bold">{% if form.instance.pk %}Edit{% else %}Create{% endif %} User</h1>
-                        </div>
-                    </div>
-                    <div class="flex items-center">
-                        <a href="{% url 'user_list' %}" class="text-gray-700 hover:text-gray-900 px-3 py-2">Back to Users</a>
-                    </div>
-                </div>
-            </div>
-        </nav>
 
-        <!-- User Form -->
-        <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-                    <div class="px-4 py-5 sm:p-6">
-                        <form method="post">
-                            {% csrf_token %}
-                            <div class="space-y-4">
-                                {% for field in form %}
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700">{{ field.label }}</label>
-                                    <div class="mt-1">
-                                        {{ field.errors }}
+{% block title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} User{% endblock %}
+
+{% block nav_title %}{% if form.instance.pk %}Edit{% else %}Create{% endif %} User{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'user_list' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Back to Users</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <div class="bg-white dark:bg-gray-800 shadow-lg overflow-hidden sm:rounded-lg transition-colors">
+            <div class="px-4 py-5 sm:p-6">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        {% for field in form %}
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors">{{ field.label }}</label>
+                            <div class="mt-1">
+                                {{ field.errors }}
+                                <div class="mt-1">
+                                    {% if field.widget_type == 'checkbox' %}
+                                        <div class="flex items-center">
+                                            {{ field }}
+                                            <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">{{ field.help_text }}</span>
+                                        </div>
+                                    {% else %}
                                         {{ field }}
-                                    </div>
-                                    {% if field.help_text %}
-                                    <p class="mt-2 text-sm text-gray-500">{{ field.help_text }}</p>
                                     {% endif %}
                                 </div>
-                                {% endfor %}
                             </div>
-                            <div class="mt-6">
-                                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">
-                                    {% if form.instance.pk %}Update{% else %}Create{% endif %} User
-                                </button>
-                            </div>
-                        </form>
+                            {% if field.help_text and field.widget_type != 'checkbox' %}
+                            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400 transition-colors">{{ field.help_text }}</p>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
                     </div>
-                </div>
+                    <div class="mt-6">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition-colors">
+                            {% if form.instance.pk %}Update{% else %}Create{% endif %} User
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

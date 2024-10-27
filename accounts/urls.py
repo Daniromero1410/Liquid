@@ -17,4 +17,6 @@ urlpatterns = [
     path('users/create/', user_passes_test(is_admin)(views.UserCreateView.as_view()), name='user_create'),
     path('users/<int:pk>/update/', user_passes_test(is_admin)(views.UserUpdateView.as_view()), name='user_update'),
     path('users/<int:pk>/delete/', user_passes_test(is_admin)(views.UserDeleteView.as_view()), name='user_delete'),
+     path('sensor/config/', views.sensor_config, name='sensor_config'),
+    path('api/sensor-data/', views.get_sensor_data, name='get_sensor_data'),
 ] 

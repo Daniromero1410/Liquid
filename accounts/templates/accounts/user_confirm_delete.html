@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Delete User{% endblock %}
+
+{% block nav_title %}Delete User{% endblock %}
+
+{% block nav_items %}
+    <a href="{% url 'user_list' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Back to Users</a>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+    <div class="px-4 py-6 sm:px-0">
+        <div class="bg-white dark:bg-gray-800 shadow-lg overflow-hidden sm:rounded-lg transition-colors">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white transition-colors">Delete User</h3>
+                <div class="mt-2 max-w-xl text-sm text-gray-500 dark:text-gray-400 transition-colors">
+                    <p>Are you sure you want to delete user "{{ object.username }}"? This action cannot be undone.</p>
+                </div>
+                <div class="mt-5">
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded mr-2 transition-colors">Delete</button>
+                        <a href="{% url 'user_list' %}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded inline-block transition-colors">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

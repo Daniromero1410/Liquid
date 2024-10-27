@@ -7,6 +7,10 @@ from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count
 from django.utils import timezone
 from datetime import timedelta
+from django.http import JsonResponse
+from .models import SensorData
+import json
+
 
 class UserListView(ListView):
     model = User 
@@ -51,3 +55,27 @@ def analytics(request):
         'recent_users': recent_users,
     }
     return render(request, 'accounts/analytics.html', context)
+
+@login_required
+def sensor_config(request):
+    if request.method == 'POST':
+        # Guardar configuración WiFi
+        wifi_config = {
+            'ssid': request.POST.get('ssid'),
+            'password': request.POST.get('password')
+        }
+        # Aquí deberías implementar la lógica para guardar la configuración
+        # y enviarla al dispositivo ESP32
+        return JsonResponse({'status': 'success'})
+    return render(request, 'accounts/sensor_config.html')
+
+@login_required
+def get_sensor_data(request):
+    # Obtener los últimos 50 registros
+    data = SensorData.objects.order_by('-timestamp')[:50]
+    sensor_data = [{
+        'timestamp': entry.timestamp,
+        'sensor_value': entry.sensor_value,
+        'humidity_percent': entry.humidity_percent
+    } for entry in data]
+    return JsonResponse(sensor_data, safe=False)
