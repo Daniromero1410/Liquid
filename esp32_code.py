@@ -4,32 +4,32 @@ import urequests
 import time
 import json
 
-# Configure ADC pin for hygrometer
+# Configurar el pin ADC para el higrómetro
 sensor_pin = ADC(Pin(32))
-sensor_pin.atten(ADC.ATTN_11DB)
+sensor_pin.atten(ADC.ATTN_11DB)  # Configurar atenuación para el rango completo de 3.3v
 
-# Server configuration - Update with your Django server's IP and port
-SERVER_URL = "http://127.0.0.1:8000//accounts/api/sensor-data/"
+wifi_config = {
+    'ssid': 'FAMILIA-ROMERO',
+    'password': 'Fernando01.'
+}			
 
-def connect_wifi(ssid, password):
+def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     if not wlan.isconnected():
-        print('Connecting to WiFi...')
-        wlan.connect(ssid, password)
-        retry_count = 0
-        while not wlan.isconnected() and retry_count < 20:
-            time.sleep(1)
-            retry_count += 1
-        if not wlan.isconnected():
-            raise Exception("Failed to connect to WiFi")
-    print("WiFi Connected")
-    print('IP Address:', wlan.ifconfig()[0])
+        print('Conectando a WiFi...')
+        wlan.connect(wifi_config['ssid'], wifi_config['password'])
+        while not wlan.isconnected():
+            pass
+    print("Conexión WiFi establecida")
+    print('Dirección IP:', wlan.ifconfig()[0])
 
 def map_value(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
 
-def send_data(sensor_value, humidity_percent):
+def enviar_datos(sensor_value, humidity_percent):
+    url = "http://192.168.39.195/urequestESP32/urequestPHP.php"
+    
     data = {
         "sensor_value": sensor_value,
         "humidity_percent": humidity_percent
@@ -37,49 +37,31 @@ def send_data(sensor_value, humidity_percent):
     headers = {'Content-Type': 'application/json'}
     
     try:
-        response = urequests.post(SERVER_URL, json=data, headers=headers)
-        result = response.json()
-        print("Server response:", result)
+        response = urequests.post(url, json=data, headers=headers)
+        print("Respuesta del servidor:", response.text)
         response.close()
-        return result
     except Exception as e:
-        print("Error sending data:", str(e))
-        return None
+        print("Error al enviar datos:", str(e))
 
 def main():
-    # WiFi credentials - update these
-    ssid = "FAMILIA-ROMERO"
-    password = "Fernando01."
+    connect_wifi()
     
-    try:
-        connect_wifi(ssid, password)
+    while True:
+        # Leer el valor analógico del sensor
+        sensor_value = sensor_pin.read()
         
-        while True:
-            try:
-                # Read sensor
-                sensor_value = sensor_pin.read()
-                humidity_percent = map_value(sensor_value, 0, 4095, 100, 0)
-                
-                # Print local values
-                print(f"Sensor value: {sensor_value}")
-                print(f"Humidity: {humidity_percent}%")
-                print("-" * 40)
-                
-                # Send to server
-                result = send_data(sensor_value, humidity_percent)
-                if result and result.get('status') == 'success':
-                    print("Data successfully saved to database")
-                
-                # Wait before next reading
-                time.sleep(2)
-                
-            except Exception as e:
-                print("Error in sensor reading:", str(e))
-                time.sleep(5)
-    
-    except Exception as e:
-        print("Fatal error:", str(e))
-        machine.reset()
+        # Mapear el valor a un porcentaje de humedad
+        humidity_percent = map_value(sensor_value, 0, 4095, 100, 0)
+        
+        # Imprimir los resultados
+        print("Valor del sensor:", sensor_value)
+        print("Porcentaje de humedad: {}%".format(humidity_percent))
+        print("------------------------")
+        
+        # Enviar datos al servidor
+        enviar_datos(sensor_value, humidity_percent)
+        
+        time.sleep(2)  # Esperar 2 segundos antes de la siguiente lectura
 
 if __name__ == "__main__":
     main()

@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
+from .db import MYSQL
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-development-key-change-in-production'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -50,8 +51,16 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
+    },
+    'conexion': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'conexionesp',
+        'USER': 'root',
+        'PASSWORD':'',
+        'PORT': '3306'
     }
 }
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {

@@ -12,3 +12,4 @@ class SensorData(models.Model):
 
     def __str__(self):
         return f"Sensor reading at {self.timestamp}: {self.humidity_percent}%"
+    
