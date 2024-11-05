@@ -9,7 +9,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import SensorData
+from django.db import connections
 import json
 
 @login_required
@@ -21,69 +21,70 @@ def home(request):
     return render(request, 'accounts/home.html', context)
 
 @login_required
+def sensor_config(request):
+    """Vista de configuración del sensor."""
+    return render(request, 'accounts/sensor_config.html')
+
+@login_required
 def analytics(request):
-    """Vista de análisis con estadísticas de usuarios."""
-    total_users = User.objects.count()
-    active_users = User.objects.filter(is_active=True).count()
-    staff_users = User.objects.filter(is_staff=True).count()
-    recent_users = User.objects.filter(
-        date_joined__gte=timezone.now() - timedelta(days=30)
-    ).count()
+    """Vista de análisis con estadísticas."""
+    total_readings = 0
+    recent_readings = 0
+    
+    try:
+        with connections['conexion'].cursor() as cursor:
+            # Get total readings
+            cursor.execute("SELECT COUNT(*) FROM lectura_higrometro")
+            total_readings = cursor.fetchone()[0]
+            
+            # Get recent readings (last 24 hours)
+            cursor.execute("""
+                SELECT COUNT(*) FROM lectura_higrometro 
+                WHERE fecha_lectura >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
+            """)
+            recent_readings = cursor.fetchone()[0]
+    except Exception as e:
+        print(f"Error getting analytics: {e}")
 
     context = {
-        'total_users': total_users,
-        'active_users': active_users,
-        'staff_users': staff_users,
-        'recent_users': recent_users
+        'total_readings': total_readings,
+        'recent_readings': recent_readings,
     }
     return render(request, 'accounts/analytics.html', context)
 
-@login_required
-def sensor_config(request):
-    if request.method == 'POST':
-        wifi_config = {
-            'ssid': request.POST.get('ssid'),
-            'password': request.POST.get('password')
-        }
-        request.session['wifi_config'] = wifi_config
-        return JsonResponse({'status': 'success'})
-    
-    # Obtener los últimos datos del sensor para mostrar inicialmente
-    latest_data = SensorData.objects.all().order_by('-timestamp')[:50]
-    context = {
-        'latest_data': latest_data
-    }
-    return render(request, 'accounts/sensor_config.html', context)
-
 @csrf_exempt
-def get_sensor_data(request):
-    if request.method == 'POST':
+def sensor_data_api(request):
+    """API para obtener datos del sensor desde MySQL."""
+    if request.method == 'GET':
         try:
-            data = json.loads(request.body)
-            # Guardar en la base de datos
-            sensor_data = SensorData.objects.create(
-                sensor_value=data['sensor_value'],
-                humidity_percent=data['humidity_percent']
-            )
-            return JsonResponse({
-                'status': 'success',
-                'data': {
-                    'timestamp': sensor_data.timestamp.isoformat(),
-                    'sensor_value': sensor_data.sensor_value,
-                    'humidity_percent': sensor_data.humidity_percent
-                }
-            })
+            with connections['conexion'].cursor() as cursor:
+                cursor.execute("""
+                    SELECT id, valor_sensor, porcentaje_humedad, fecha_lectura 
+                    FROM lectura_higrometro 
+                    ORDER BY fecha_lectura DESC 
+                    LIMIT 50
+                """)
+                columns = [col[0] for col in cursor.description]
+                data = [
+                    dict(zip(columns, row))
+                    for row in cursor.fetchall()
+                ]
+                
+                # Format data for frontend
+                formatted_data = [{
+                    'id': row['id'],
+                    'sensor_value': row['valor_sensor'],
+                    'humidity_percent': row['porcentaje_humedad'],
+                    'timestamp': row['fecha_lectura'].isoformat() if row['fecha_lectura'] else None
+                } for row in data]
+                
+                return JsonResponse(formatted_data, safe=False)
         except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+            return JsonResponse({'error': str(e)}, status=500)
     
-    # Petición GET - devolver las últimas 50 lecturas
-    data = list(SensorData.objects.order_by('-timestamp')[:50].values(
-        'timestamp', 'sensor_value', 'humidity_percent'
-    ))
-    # Invertir para mostrar las más antiguas primero
-    data.reverse()
-    return JsonResponse(data, safe=False)
+    return JsonResponse({'error': 'Method not allowed'}, status=405)
 
+# User management views
 class UserListView(ListView):
     model = User
     template_name = 'accounts/user_list.html'

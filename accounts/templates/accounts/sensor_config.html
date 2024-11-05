@@ -1,12 +1,16 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Sensor Configuration{% endblock %}
+{% block title %}Sensor Data{% endblock %}
 
-{% block nav_title %}Sensor Configuration{% endblock %}
+{% block nav_title %}Sensor Data{% endblock %}
 
 {% block nav_items %}
     <a href="{% url 'home' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Dashboard</a>
+    <form method="post" action="{% url 'logout' %}" class="inline">
+        {% csrf_token %}
+        <button type="submit" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
+    </form>
 {% endblock %}
 
 {% block content %}
@@ -15,15 +19,15 @@
         <!-- Sensor Status Card -->
         <div class="mb-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-colors">
             <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">Estado del Sensor</h2>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">Sensor Status</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Última lectura</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Latest Reading</p>
                         <p id="lastReading" class="text-2xl font-bold text-gray-900 dark:text-white">--</p>
                     </div>
                     <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                        <p class="text-sm text-gray-500 dark:text-gray-400">Estado de conexión</p>
-                        <p id="connectionStatus" class="text-2xl font-bold text-green-500">Conectado</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Connection Status</p>
+                        <p id="connectionStatus" class="text-2xl font-bold text-green-500">Connected</p>
                     </div>
                 </div>
             </div>
@@ -33,10 +37,10 @@
         <div class="mb-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-colors">
             <div class="px-4 py-5 sm:p-6">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Datos en Tiempo Real</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white transition-colors">Real-time Data</h2>
                     <button onclick="exportToCSV()" 
                             class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors">
-                        Exportar CSV
+                        Export CSV
                     </button>
                 </div>
                 <div class="h-64">
@@ -48,14 +52,14 @@
         <!-- Data Table -->
         <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg overflow-hidden transition-colors">
             <div class="px-4 py-5 sm:p-6">
-                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">Historial de Lecturas</h2>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4 transition-colors">Reading History</h2>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-700">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Valor del Sensor</th>
-                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Humedad (%)</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sensor Value</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Humidity (%)</th>
                             </tr>
                         </thead>
                         <tbody id="sensorDataTable" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -81,7 +85,7 @@ function initChart() {
         data: {
             labels: [],
             datasets: [{
-                label: 'Humedad (%)',
+                label: 'Humidity (%)',
                 data: [],
                 borderColor: 'rgb(59, 130, 246)',
                 tension: 0.1,
@@ -136,7 +140,7 @@ function updateTable(data) {
 
     // Update last reading display
     if (data.length > 0) {
-        const latest = data[data.length - 1];
+        const latest = data[0];
         document.getElementById('lastReading').textContent = `${latest.humidity_percent}%`;
     }
 }
@@ -146,19 +150,19 @@ function fetchData() {
         .then(response => response.json())
         .then(data => {
             sensorData = data;
-            updateChart(data);
+            updateChart(data.reverse());  // Reverse to show oldest to newest in chart
             updateTable(data);
         })
         .catch(error => {
             console.error('Error fetching data:', error);
-            document.getElementById('connectionStatus').textContent = 'Desconectado';
+            document.getElementById('connectionStatus').textContent = 'Disconnected';
             document.getElementById('connectionStatus').classList.remove('text-green-500');
             document.getElementById('connectionStatus').classList.add('text-red-500');
         });
 }
 
 function exportToCSV() {
-    const headers = ['Fecha', 'Valor del Sensor', 'Humedad (%)'];
+    const headers = ['Date', 'Sensor Value', 'Humidity (%)'];
     const csvData = sensorData.map(d => [
         new Date(d.timestamp).toLocaleString(),
         d.sensor_value,

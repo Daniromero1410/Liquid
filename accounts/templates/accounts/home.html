@@ -8,12 +8,11 @@
     <a href="{% url 'user_list' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Users</a>
     {% endif %}
     <a href="{% url 'analytics' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Analytics</a>
-    <a href="{% url 'sensor_config' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Sensor</a>
+    <a href="{% url 'sensor_config' %}" class="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white px-3 py-2">Sensor Data</a>
     <form method="post" action="{% url 'logout' %}" class="inline">
         {% csrf_token %}
         <button type="submit" class="ml-4 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded">Logout</button>
     </form>
-    
 {% endblock %}
 
 {% block content %}
@@ -24,15 +23,16 @@
                 <h2 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Welcome, {{ user.username }}!</h2>
                 <div class="space-y-4">
                     <p class="text-gray-600 dark:text-gray-400">You are logged in to your account.</p>
-                    {% if user.is_staff %}
                     <div class="mt-4">
-                        <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Admin Actions:</h3>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Quick Links:</h3>
                         <ul class="list-disc list-inside space-y-2">
-                            <li><a href="{% url 'user_list' %}" class="text-primary hover:text-primary-dark">Manage Users</a></li>
+                            <li><a href="{% url 'sensor_config' %}" class="text-primary hover:text-primary-dark">View Sensor Data</a></li>
                             <li><a href="{% url 'analytics' %}" class="text-primary hover:text-primary-dark">View Analytics</a></li>
+                            {% if user.is_staff %}
+                            <li><a href="{% url 'user_list' %}" class="text-primary hover:text-primary-dark">Manage Users</a></li>
+                            {% endif %}
                         </ul>
                     </div>
-                    {% endif %}
                 </div>
             </div>
         </div>
