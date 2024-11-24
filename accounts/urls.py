@@ -17,11 +17,14 @@ urlpatterns = [
     path('sensor/', login_required(views.sensor_config), name='sensor_config'),
     
     # Sensor API
-    path('api/sensor-data/', views.sensor_data_api, name='sensor_data_api'),
+    path('receive/', views.receive_data, name='receive_data'),
+    path('view/', views.view_data, name='view_data'),
     
     # User management URLs (admin only)
     path('users/', user_passes_test(is_admin)(views.UserListView.as_view()), name='user_list'),
     path('users/create/', user_passes_test(is_admin)(views.UserCreateView.as_view()), name='user_create'),
     path('users/<int:pk>/update/', user_passes_test(is_admin)(views.UserUpdateView.as_view()), name='user_update'),
     path('users/<int:pk>/delete/', user_passes_test(is_admin)(views.UserDeleteView.as_view()), name='user_delete'),
+
+    
 ]
