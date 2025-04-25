@@ -9,13 +9,17 @@ sensor_pin = ADC(Pin(32))
 sensor_pin.atten(ADC.ATTN_11DB)  # Configurar atenuación para el rango completo de 3.3v
 
 wifi_config = {
-    'ssid': 'FAMILIA-ROMERO',
-    'password': 'Fernando01.'
-}			
+    'ssid': '',
+    'password': ''
+}
 
 def connect_wifi():
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
+    
+    # Desactivar el modo de punto de acceso
+    network.WLAN(network.AP_IF).active(False)
+
     if not wlan.isconnected():
         print('Conectando a WiFi...')
         wlan.connect(wifi_config['ssid'], wifi_config['password'])
@@ -28,7 +32,7 @@ def map_value(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
 
 def enviar_datos(sensor_value, humidity_percent):
-    url = "http://192.168.39.195/urequestESP32/urequestPHP.php"
+    url = "http://192.168.39.195:8000/accounts/receive/"
     
     data = {
         "sensor_value": sensor_value,
@@ -61,7 +65,7 @@ def main():
         # Enviar datos al servidor
         enviar_datos(sensor_value, humidity_percent)
         
-        time.sleep(2)  # Esperar 2 segundos antes de la siguiente lectura
+        time.sleep(1)  # Esperar 1 segundos antes de la siguiente lectura
 
 if __name__ == "__main__":
     main()
