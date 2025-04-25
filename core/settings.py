@@ -5,7 +5,7 @@ from .db import MYSQL
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-development-key-change-in-production'
 DEBUG = True
-ALLOWED_HOSTS = ['192.168.39.195', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['192.168.39.195', 'localhost', '127.0.0.1', '192.168.0.101']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
