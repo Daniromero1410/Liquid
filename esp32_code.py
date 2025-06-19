@@ -32,7 +32,7 @@ def map_value(x, in_min, in_max, out_min, out_max):
     return (x - in_min) * (out_max - out_min) // (in_max - in_min) + out_min
 
 def enviar_datos(sensor_value, humidity_percent):
-    url = "http://192.168.39.195:8000/accounts/receive/"
+    url = "http://tu_ip:puerto/accounts/receive/"
     
     data = {
         "sensor_value": sensor_value,
